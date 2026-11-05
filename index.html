@@ -20,7 +20,7 @@
   --mt-ouro:#c99a2e; --mt-ouro-claro:#e8b931; --mt-verde:#0b7a3e;
   /* superfícies */
   --bg:#f3f5f9; --painel:#ffffff; --painel-2:#f8fafc; --ink:#14213d; --ink2:#55627a; --linha:#dfe4ec;
-  --verde:#127a45; --ambar:#a35f00; --vermelho:#b42318;
+  --verde:#127a45; --ambar:#8a5000; --vermelho:#b42318;
   /* acento do app (sobrescrito pelo construir.py) */
   --accent:var(--app-acento,#12487f); --accent-ink:#ffffff; --accent-forte:var(--app-acento-forte,#0a2f5c); --accent-claro:var(--app-acento-claro,#1e63ae);
   --accent-suave:color-mix(in srgb, var(--accent) 10%, var(--painel));
@@ -445,6 +445,21 @@ body[data-layout="ferramenta"] nav.menu a[aria-current="page"]{background:transp
 .ca-card-topo{display:flex;justify-content:space-between;align-items:center;gap:6px}
 .ca-card-obj{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:700;line-height:1.3}
 .ca-card .sub{font-size:12px}
+
+/* gráficos de barras do painel: no máximo 640px para não crescer na largura toda */
+.ca-grafico{display:block;width:100%;max-width:640px;height:auto;margin:0 auto}
+@media (max-width:760px){ .ca-grafico{max-width:100%} }
+
+/* Feedback 03/11/2026: painel mais compacto, sem letra grande e sem rolagem. */
+body[data-rota="painel"] .kpi .v{font-size:23px}
+body[data-rota="painel"] .kpi .r{font-size:11.5px}
+body[data-rota="painel"] .tabela-wrap table{font-size:12.5px}
+body[data-rota="painel"] .tabela-wrap th,body[data-rota="painel"] .tabela-wrap td{padding:6px 8px}
+body[data-rota="painel"] .grade{gap:10px}
+@media (max-width:620px){
+  body[data-rota="painel"] .kpi .v{font-size:20px}
+  body[data-rota="painel"] .tabela-wrap table{font-size:12px}
+}
 
 </style>
 </head>
@@ -1746,9 +1761,10 @@ teste("Sprint 5: processo parado acima do prazo da etapa", ()=>{
 });
 
 function caBarras(titulo, pares, cor = "var(--accent)"){
+  if (!pares.length) return `<div class="card"><h2 style="margin-top:0">${esc(titulo)}</h2><svg class="ca-grafico" viewBox="0 0 420 60" role="img" aria-label="${esc(titulo)}"><text x="210" y="34" text-anchor="middle" font-size="12" fill="var(--ink2)">Sem dados no período.</text></svg></div>`;
   const max = Math.max(1, ...pares.map(([, n])=>n)), w = 420, h = 26;
   return `<div class="card"><h2 style="margin-top:0">${esc(titulo)}</h2>
-    <svg viewBox="0 0 ${w} ${Math.max(60, pares.length * h + 10)}" role="img" aria-label="${esc(titulo)}" style="width:100%;height:auto">
+    <svg class="ca-grafico" viewBox="0 0 ${w} ${Math.max(60, pares.length * h + 10)}" role="img" aria-label="${esc(titulo)}">
       ${pares.map(([rot, n], i)=>{ const d = Math.round(n / max * (w - 170)), y = i * h + 6;
         return `<text x="0" y="${y + 13}" font-size="12" fill="var(--ink2)">${esc(String(rot).slice(0, 22))}</text>
           <rect x="150" y="${y + 2}" width="${d}" height="14" rx="3" fill="${cor}"></rect>
